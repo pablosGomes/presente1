@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Te Amo Gehh ❤️</title>
+  <link rel="stylesheet" href="index.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <a href="intro.html" class="back-button">Voltar</a>
+
+  <canvas id="background"></canvas>
+
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="content-wrapper">
+    <h1>Te Amo, Gehh ❤️</h1>
+    <p>
+      Eu te amo tanto que nem sei oque te dizer. <br />
+      Cada segundo, cada conaversa, com você são todos meus melhores momentos. <br />
+      Obrigado por ser quem você é. <br />
+      Eu vou amor vc pra pra sempre princesa e você sempre será o amor da minha vida
+    </p>
+
+    <div class="spotify-container">
+      <iframe src="https://open.spotify.com/embed/track/0GYPcKDlsb8WEtJkkKdtgH?utm_source=generator" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    </div>
+
+    <div class="button-container">
+      <a href="flowers.html" class="button">Receba suas flores</a>
+      <a href="heart-particles-animation.html" class="button">My heart</a>
+    </div>
+  </div>
+
+  <script src="background.js"></script>
+  <script>
+    // Adiciona mais partículas dinamicamente
+    function createParticle() {
+      const particle = document.createElement("div");
+      particle.className = "particle";
+      particle.style.left = Math.random() * 100 + "%";
+      particle.style.animationDelay = Math.random() * 6 + "s";
+      particle.style.animationDuration = (Math.random() * 3 + 4) + "s";
+      document.querySelector(".particles").appendChild(particle);
+      
+      // Remove a partícula após a animação
+      setTimeout(() => {
+        particle.remove();
+      }, 8000);
+    }
+
+    // Cria partículas continuamente
+    setInterval(createParticle, 800);
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Heart Particles + Música</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: black;
+        overflow: hidden; /* Esconde a barra de rolagem */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between; /* Distribui o espaço entre os itens */
+        min-height: 100vh;
+        position: relative;
+        color: white;
+        font-family: "Poppins", sans-serif;
+      }
+
+      .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: #d63384;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 1em;
+        z-index: 100;
+        transition: background-color 0.3s ease;
+      }
+
+      .back-button:hover {
+        background-color: #e04a95;
+      }
+
+      .quote-container {
+        position: relative;
+        z-index: 10;
+        margin-top: 50px; /* Espaçamento do topo */
+        text-align: center;
+        max-width: 80%;
+      }
+
+      .quote-text {
+        font-size: 1.2em;
+        color: #d63384;
+      }
+
+      canvas {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 0;
+      }
+
+      .spotify-container {
+        width: 100%;
+        max-width: 360px;
+        padding: 20px 10px;
+        z-index: 2;
+        opacity: 0;
+        transition: opacity 1s ease;
+        margin-bottom: 20px; /* Espaçamento inferior */
+      }
+
+      .spotify-container.visible {
+        opacity: 1;
+      }
+
+      /* Responsividade para celulares */
+      @media screen and (max-width: 420px) {
+        .spotify-container {
+          padding: 0 8px;
+          margin-bottom: 4px;
+        }
+
+        .spotify-container iframe {
+          height: 72px;
+        }
+
+        .quote-text {
+          font-size: 1em;
+        }
+      }
+
+      @media screen and (max-width: 320px) {
+        .spotify-container {
+          padding: 0 6px;
+          margin-bottom: 2px;
+        }
+
+        .spotify-container iframe {
+          height: 64px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="index.html" class="back-button">Voltar</a>
+
+    <div class="quote-container">
+      <p class="quote-text">
+        Entregando meu coração a você igual senna entregou o seu ás pistas
+      </p>
+    </div>
+
+    <canvas id="pinkboard"></canvas>
+
+    <div class="spotify-container">
+      <iframe
+        style="border-radius: 12px"
+        src="https://open.spotify.com/embed/track/2ux3Sb90r5aA74nLMls1u0?utm_source=generator"
+        frameborder="0"
+        allowfullscreen=""
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+      ></iframe>
+    </div>
+
+    <script>
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          document
+            .querySelector(".spotify-container")
+            ?.classList.add("visible");
+        }, 2000);
+      });
+    </script>
+
+    <!-- Script da animação de partículas -->
+    <script>
+      var settings = {
+        particles: {
+          length: 10000,
+          duration: 4,
+          velocity: 80,
+          effect: -1.3,
+          size: 8,
+        },
+      };
+      (function () {
+        var b = 0;
+        var c = ["ms", "moz", "webkit", "o"];
+        for (var a = 0; a < c.length && !window.requestAnimationFrame; ++a) {
+          window.requestAnimationFrame = window[c[a] + "RequestAnimationFrame"];
+          window.cancelAnimationFrame =
+            window[c[a] + "CancelAnimationFrame"] ||
+            window[c[a] + "CancelRequestAnimationFrame"];
+        }
+        if (!window.requestAnimationFrame) {
+          window.requestAnimationFrame = function (h, e) {
+            var d = new Date().getTime();
+            var f = Math.max(0, 16 - (d - b));
+            var g = window.setTimeout(function () {
+              h(d + f);
+            }, f);
+            b = d + f;
+            return g;
+          };
+        }
+        if (!window.cancelAnimationFrame) {
+          window.cancelAnimationFrame = function (d) {
+            clearTimeout(d);
+          };
+        }
+      })();
+
+      var Point = function (x, y) {
+        this.x = x || 0;
+        this.y = y || 0;
+      };
+      Point.prototype = {
+        clone() {
+          return new Point(this.x, this.y);
+        },
+        length(l) {
+          if (l === undefined)
+            return Math.sqrt(this.x * this.x + this.y * this.y);
+          this.normalize();
+          this.x *= l;
+          this.y *= l;
+          return this;
+        },
+        normalize() {
+          var l = this.length();
+          this.x /= l;
+          this.y /= l;
+          return this;
+        },
+      };
+
+      function Particle() {
+        this.position = new Point();
+        this.velocity = new Point();
+        this.acceleration = new Point();
+        this.age = 0;
+      }
+      Particle.prototype = {
+        initialize(x, y, dx, dy) {
+          this.position.x = x;
+          this.position.y = y;
+          this.velocity.x = dx;
+          this.velocity.y = dy;
+          this.acceleration.x = dx * settings.particles.effect;
+          this.acceleration.y = dy * settings.particles.effect;
+          this.age = 0;
+        },
+        update(dt) {
+          this.position.x += this.velocity.x * dt;
+          this.position.y += this.velocity.y * dt;
+          this.velocity.x += this.acceleration.x * dt;
+          this.velocity.y += this.acceleration.y * dt;
+          this.age += dt;
+        },
+        draw(ctx, img) {
+          const ease = (t) => --t * t * t + 1;
+          const size = img.width * ease(this.age / settings.particles.duration);
+          ctx.globalAlpha = 1 - this.age / settings.particles.duration;
+          ctx.drawImage(
+            img,
+            this.position.x - size / 2,
+            this.position.y - size / 2,
+            size,
+            size
+          );
+        },
+      };
+
+      function ParticlePool(length) {
+        this.particles = new Array(length).fill().map(() => new Particle());
+        this.firstActive = 0;
+        this.firstFree = 0;
+        this.duration = settings.particles.duration;
+      }
+      ParticlePool.prototype = {
+        add(x, y, dx, dy) {
+          this.particles[this.firstFree].initialize(x, y, dx, dy);
+          this.firstFree = (this.firstFree + 1) % this.particles.length;
+          if (this.firstActive === this.firstFree) {
+            this.firstActive = (this.firstActive + 1) % this.particles.length;
+          }
+        },
+        update(dt) {
+          let i = this.firstActive;
+          while (i !== this.firstFree) {
+            this.particles[i].update(dt);
+            if (this.particles[i].age >= this.duration) {
+              this.firstActive = (this.firstActive + 1) % this.particles.length;
+            }
+            i = (i + 1) % this.particles.length;
+          }
+        },
+        draw(ctx, img) {
+          let i = this.firstActive;
+          while (i !== this.firstFree) {
+            this.particles[i].draw(ctx, img);
+            i = (i + 1) % this.particles.length;
+          }
+        },
+      };
+
+      (function (canvas) {
+        const ctx = canvas.getContext("2d");
+        const pool = new ParticlePool(settings.particles.length);
+        const rate = settings.particles.length / settings.particles.duration;
+        let time;
+
+        function pointOnHeart(t) {
+          return new Point(
+            160 * Math.pow(Math.sin(t), 3),
+            130 * Math.cos(t) -
+              50 * Math.cos(2 * t) -
+              20 * Math.cos(3 * t) -
+              10 * Math.cos(4 * t) +
+              25
+          );
+        }
+
+        const img = (() => {
+          const c = document.createElement("canvas");
+          const ctx2 = c.getContext("2d");
+          c.width = settings.particles.size;
+          c.height = settings.particles.size;
+          ctx2.beginPath();
+          let t = -Math.PI;
+          const to = (t) => {
+            const p = pointOnHeart(t);
+            p.x =
+              settings.particles.size / 2 +
+              (p.x * settings.particles.size) / 350;
+            p.y =
+              settings.particles.size / 2 -
+              (p.y * settings.particles.size) / 350;
+            return p;
+          };
+          let p = to(t);
+          ctx2.moveTo(p.x, p.y);
+          while (t < Math.PI) {
+            t += 0.01;
+            p = to(t);
+            ctx2.lineTo(p.x, p.y);
+          }
+          ctx2.closePath();
+          ctx2.fillStyle = "#f50b02";
+          ctx2.fill();
+          const image = new Image();
+          image.src = c.toDataURL();
+          return image;
+        })();
+
+        function render() {
+          requestAnimationFrame(render);
+          const now = new Date().getTime() / 1000;
+          const dt = now - (time || now);
+          time = now;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const count = rate * dt;
+          for (let i = 0; i < count; i++) {
+            const pos = pointOnHeart(Math.PI - 2 * Math.PI * Math.random());
+            const dir = pos.clone().length(settings.particles.velocity);
+            pool.add(
+              canvas.width / 2 + pos.x,
+              canvas.height / 2 - pos.y,
+              dir.x,
+              -dir.y
+            );
+          }
+          pool.update(dt);
+          pool.draw(ctx, img);
+        }
+
+        function onResize() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+
+        window.onresize = onResize;
+        setTimeout(() => {
+          onResize();
+          render();
+        }, 10);
+      })(document.getElementById("pinkboard"));
+    </script>
+  </body>
+</html>
